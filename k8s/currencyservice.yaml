@@ -1,0 +1,50 @@
+## << 변수 >> 치환 필요
+
+## << ECR URI >>      => ex) 123456789012.dkr.ecr.us-east-1.amazonaws.com
+## << SERVICE NAME >> => ex) eshop-backend
+## << TAG >>          => ex) latest
+
+## << ECR URI >>/<< SERVICE NAME >>:<< TAG >> => ex) 123456789012.dkr.ecr.us-east-1.amazonaws.com/eshop-backend:latest
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: eshop-currencyservice
+spec:
+  selector:
+    matchLabels:
+      app: eshop-currencyservice
+  template:
+    metadata:
+      labels:
+        app: eshop-currencyservice
+    spec:
+      terminationGracePeriodSeconds: 5
+      containers:
+      - name: eshop-currencyservice
+        image: 894231944791.dkr.ecr.us-east-1.amazonaws.com/eshop-currencyservice:latest
+        ports:
+        - containerPort: 8094
+        env:
+        - name: PORT
+          value: "8094"
+        resources:
+          requests:
+            cpu: 100m
+            memory: 64Mi
+          limits:
+            cpu: 200m
+            memory: 128Mi
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: eshop-currencyservice
+spec:
+  type: ClusterIP
+  selector:
+    app: eshop-currencyservice
+  ports:
+  - name: api
+    port: 8094
+    targetPort: 8094
